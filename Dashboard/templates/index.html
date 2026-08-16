@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Resumen · Panel STLF{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="hero-eyebrow">EVALUACIÓN · LSTM V1 VS LSTM V4 · HORIZONTE 1H</div>
+  <h1 class="hero-title">Pronóstico de carga por alimentador</h1>
+  <p class="hero-desc">
+    Comparación de dos arquitecturas LSTM — v1 (línea base) y v4 (corrector residual) —
+    evaluadas sobre el mismo horizonte corto de 1h (4 pasos de 15 min), para 5 alimentadores
+    de EEASA con distinto perfil de consumo — industrial, urbano y rural.
+  </p>
+</section>
+
+<section class="kpi-strip">
+  <div class="kpi-card">
+    <span class="kpi-label">Alimentadores aceptados</span>
+    <span class="kpi-value">{{ n_aceptados }}<span class="kpi-value-sub">/{{ n_total }}</span></span>
+    <span class="kpi-foot">bajo su umbral práctico de MAPE, con LSTM v4</span>
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-label">Mejora promedio v4 vs v1</span>
+    <span class="kpi-value accent-good">−{{ "%.2f"|format(mejora_promedio) }}<span class="kpi-value-sub">pp MAPE</span></span>
+    <span class="kpi-foot">puntos porcentuales de error reducido</span>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>MAPE por alimentador</h2>
+    <p>Línea punteada = umbral práctico de aceptación específico del alimentador</p>
+  </div>
+  <div class="chart-wrap">
+    <canvas id="mapeChart" height="90"></canvas>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Detalle por alimentador</h2>
+    <p>Selecciona un alimentador para ver sus métricas completas y el marcador de umbral</p>
+  </div>
+  <div class="table-wrap">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Alimentador</th>
+          <th>Descripción</th>
+          <th>Cantón</th>
+          <th>MAPE v1</th>
+          <th>MAPE v4</th>
+          <th>Umbral práctico</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for codigo, a in alimentadores.items() %}
+        <tr>
+          <td class="mono">{{ codigo }}</td>
+          <td>{{ a.descripcion }}</td>
+          <td>{{ canton_map.get(codigo, "—") }}</td>
+          <td class="mono">{{ "%.2f"|format(a.v1.mape) }}%</td>
+          <td class="mono accent-strong">{{ "%.2f"|format(a.v4.mape) }}%</td>
+          <td class="mono muted">{{ "%.1f"|format(a.umbral_mape) }}%</td>
+          <td>
+            {% if a.acepta_umbral %}
+            <span class="badge badge-good">Acepta</span>
+            {% else %}
+            <span class="badge badge-bad">No acepta</span>
+            {% endif %}
+          </td>
+          <td><a class="row-link" href="{{ url_for('detalle', codigo=codigo) }}">Ver detalle →</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Gráficas del análisis</h2>
+    <p>Figuras generadas durante el procesamiento</p>
+  </div>
+  <div class="gallery">
+    <figure class="gallery-item">
+      <img src="{{ url_for('static', filename='img/comparacion_v1_v4_ALRG.png') }}" alt="Comparación V1 - V4 (ALRG)">
+      <figcaption>comparacion_mape_5_alimentadores.png</figcaption>
+    </figure>
+    <figure class="gallery-item">
+      <img src="{{ url_for('static', filename='img/V1_V4.png') }}" alt="Comparación general de resultados">
+      <figcaption>__results___16_0.png</figcaption>
+    </figure>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ctx = document.getElementById('mapeChart').getContext('2d');
+const labels = {{ chart_labels|tojson }};
+const v1 = {{ chart_v1|tojson }};
+const v4 = {{ chart_v4|tojson }};
+const umbrales = {{ chart_umbrales|tojson }};
+
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: [
+      { label: 'LSTM v1', data: v1, backgroundColor: '#5B6B8C' },
+      { label: 'LSTM v4', data: v4, backgroundColor: '#2FD3B0' },
+      {
+        label: 'Umbral',
+        data: umbrales,
+        type: 'line',
+        borderColor: '#E5484D',
+        borderDash: [6, 4],
+        borderWidth: 2,
+        pointRadius: 0,
+        fill: false
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      x: { grid: { color: '#1E293F' }, ticks: { color: '#8A99B3', font: { family: 'JetBrains Mono' } } },
+      y: {
+        grid: { color: '#1E293F' },
+        ticks: { color: '#8A99B3', font: { family: 'JetBrains Mono' } },
+        title: { display: true, text: 'MAPE (%)', color: '#8A99B3' }
+      }
+    },
+    plugins: {
+      legend: { labels: { color: '#E6EDF5', font: { family: 'Inter' } } },
+      tooltip: {
+        backgroundColor: '#0B1220',
+        borderColor: '#1E293F',
+        borderWidth: 1,
+        titleFont: { family: 'JetBrains Mono' },
+        bodyFont: { family: 'JetBrains Mono' }
+      }
+    }
+  }
+});
+</script>
+{% endblock %}

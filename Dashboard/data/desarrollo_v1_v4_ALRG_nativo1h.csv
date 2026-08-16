@@ -1,0 +1,5 @@
+Versión,Cambio introducido,MAPE (%),RMSE (kW),MAE (kW),R²,Mejora vs. anterior (pp)
+v1 — línea base (split porcentual),(punto de partida),4.273,14.719,7.533,0.9227,
+v2 — split por fechas + LayerNorm,split cronológico explícito + LayerNorm,13.965,38.943,24.061,0.6238,-9.692
+v3 — régimen limpio + dual-input,excluye 2019-2021 y racionamiento; rama de persistencia,5.12,15.561,7.89,0.8789,8.844999999999999
+v4 — aprendizaje de residuos,target = residuo vs. persistencia (últimos 4 pasos),3.205,12.315,5.069,0.9239,1.915

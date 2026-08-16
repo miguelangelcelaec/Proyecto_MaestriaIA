@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}Predicciones {{ codigo }} · Panel STLF{% endblock %}
+
+{% block content %}
+
+<div class="breadcrumb">
+  <a href="{{ url_for('detalle', codigo=codigo) }}">← {{ codigo }}</a>
+</div>
+
+<section class="hero hero-detail">
+  <div class="hero-eyebrow">CURVAS DE PREDICCIÓN · {{ codigo }} {% if canton %}· {{ canton }}{% endif %}</div>
+  <h1 class="hero-title">Real vs. predicho</h1>
+  <p class="hero-desc">
+    LSTM v1 y LSTM v4 se evalúan sobre el mismo horizonte corto de 1h (4 pasos de 15 min),
+    con 500 ventanas deslizantes por alimentador. Usa las flechas para recorrerlas.
+  </p>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <div class="pred-controls">
+      <div class="seg-control" id="versionControl">
+        {% if tiene_v4 %}<button class="seg-btn active" data-version="v4">LSTM v4</button>{% endif %}
+        {% if tiene_v1 %}<button class="seg-btn{% if not tiene_v4 %} active{% endif %}" data-version="v1">LSTM v1</button>{% endif %}
+      </div>
+      <div class="nav-control">
+        <button id="btnPrev" class="nav-btn" title="Ventana anterior">←</button>
+        <span id="ventanaLabel" class="mono nav-label">cargando…</span>
+        <button id="btnNext" class="nav-btn" title="Ventana siguiente">→</button>
+        <input type="number" id="ventanaJump" class="date-input" title="Ir a ventana" min="0" style="width: 90px;">
+      </div>
+    </div>
+    <p>Cada ventana muestra un pronóstico de 1h (4 pasos de 15 min: +15, +30, +45, +60 min)</p>
+  </div>
+  <div class="chart-wrap" style="height: 420px;">
+    <canvas id="predChart"></canvas>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const codigo = {{ codigo|tojson }};
+let version = {{ ('v4' if tiene_v4 else 'v1')|tojson }};
+let ventanaActual = null;
+let ventanaMin = 0, ventanaMax = 0;
+let chart = null;
+
+async function fetchVentana(params) {
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(`/api/prediccion/${codigo}/${version}?${qs}`);
+  if (!res.ok) return null;
+  return await res.json();
+}
+
+function renderChart(data) {
+  const ctx = document.getElementById('predChart').getContext('2d');
+  const color = data.version === 'v1' ? '#5B6B8C' : '#2FD3B0';
+  const datasets = [
+    {
+      label: 'Real',
+      data: data.real,
+      borderColor: '#E6EDF5',
+      backgroundColor: 'transparent',
+      borderWidth: 2.5,
+      pointRadius: 3,
+      tension: 0.15
+    },
+    {
+      label: `Predicho (LSTM ${data.version})`,
+      data: data[`pred_${data.version}`],
+      borderColor: color,
+      backgroundColor: data.version === 'v4' ? 'rgba(47,211,176,0.08)' : 'transparent',
+      borderWidth: 2.5,
+      pointRadius: 3,
+      borderDash: data.version === 'v1' ? [4,3] : [],
+      fill: data.version === 'v4',
+      tension: 0.15
+    }
+  ];
+
+  const labels = data.pasos.map(p => `+${p * 15} min`);
+
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: {
+          grid: { color: '#1E293F' },
+          ticks: { color: '#8A99B3', font: { family: 'JetBrains Mono' } },
+          title: { display: true, text: 'Horizonte de pronóstico', color: '#8A99B3' }
+        },
+        y: {
+          grid: { color: '#1E293F' },
+          ticks: { color: '#8A99B3', font: { family: 'JetBrains Mono' } },
+          title: { display: true, text: 'kW', color: '#8A99B3' }
+        }
+      },
+      plugins: {
+        legend: { labels: { color: '#E6EDF5', font: { family: 'Inter' } } },
+        tooltip: {
+          backgroundColor: '#0B1220', borderColor: '#1E293F', borderWidth: 1,
+          titleFont: { family: 'JetBrains Mono' }, bodyFont: { family: 'JetBrains Mono' }
+        }
+      }
+    }
+  });
+}
+
+async function cargarVentana(params) {
+  document.getElementById('ventanaLabel').textContent = 'cargando…';
+  const data = await fetchVentana(params);
+  if (!data) return;
+  ventanaActual = data.ventana;
+  ventanaMin = data.ventana_min;
+  ventanaMax = data.ventana_max;
+  document.getElementById('ventanaLabel').textContent = `Ventana ${data.ventana} / ${ventanaMax}`;
+  document.getElementById('ventanaJump').value = data.ventana;
+  document.getElementById('ventanaJump').max = ventanaMax;
+  renderChart(data);
+}
+
+document.querySelectorAll('#versionControl .seg-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#versionControl .seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    version = btn.dataset.version;
+    cargarVentana({ ventana: ventanaActual ?? 0 });
+  });
+});
+
+document.getElementById('btnPrev').addEventListener('click', () => {
+  if (ventanaActual === null) return;
+  const nueva = Math.max(ventanaMin, ventanaActual - 1);
+  cargarVentana({ ventana: nueva });
+});
+document.getElementById('btnNext').addEventListener('click', () => {
+  if (ventanaActual === null) return;
+  const nueva = Math.min(ventanaMax, ventanaActual + 1);
+  cargarVentana({ ventana: nueva });
+});
+document.getElementById('ventanaJump').addEventListener('change', (e) => {
+  const v = parseInt(e.target.value, 10);
+  if (!Number.isNaN(v)) cargarVentana({ ventana: Math.min(Math.max(v, ventanaMin), ventanaMax) });
+});
+
+cargarVentana({});
+</script>
+{% endblock %}

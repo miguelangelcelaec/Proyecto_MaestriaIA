@@ -1,0 +1,74 @@
+{
+  "alimentador": "ALUR",
+  "calidad": {
+    "n_esperados": 350688,
+    "n_entrenables": 342416,
+    "completitud_pct": 97.64,
+    "n_gaps_mantenimiento_pasos": 0,
+    "n_huecos_comunicacion": 8501,
+    "n_huecos_pequenos_interpolados": 229,
+    "n_huecos_grandes_sin_imputar": 7,
+    "n_outliers_marcados": 1319,
+    "kw_media": 451.43,
+    "kw_std": 470.75,
+    "kw_max": 3636.51,
+    "kw_min": 0.0
+  },
+  "features": [
+    "kw_activa",
+    "kvar_reactiva",
+    "fp_calculado",
+    "paso_dia_sin",
+    "paso_dia_cos",
+    "dow_sin",
+    "dow_cos",
+    "mes_sin",
+    "mes_cos",
+    "semana_sin",
+    "semana_cos",
+    "es_fin_semana",
+    "es_lunes",
+    "es_viernes",
+    "es_feriado_ec",
+    "flag_gap",
+    "kw_lag_4",
+    "kw_lag_8",
+    "kw_lag_96",
+    "kw_lag_192",
+    "kw_lag_672",
+    "kw_media_24h",
+    "kw_std_24h",
+    "kw_max_24h",
+    "kw_min_24h",
+    "kw_rango_24h"
+  ],
+  "tensores_shape": {
+    "X_train": [
+      17487,
+      672,
+      26
+    ],
+    "y_train": [
+      17487,
+      96
+    ],
+    "X_val": [
+      2144,
+      672,
+      26
+    ],
+    "y_val": [
+      2144,
+      96
+    ],
+    "X_test": [
+      2144,
+      672,
+      26
+    ],
+    "y_test": [
+      2144,
+      96
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}{{ codigo }} · Panel STLF{% endblock %}
+
+{% block content %}
+
+<div class="breadcrumb">
+  <a href="{{ url_for('index') }}">← Resumen</a>
+</div>
+
+<section class="hero hero-detail">
+  <div class="hero-eyebrow">ALIMENTADOR {{ codigo }} {% if canton %}· {{ canton }}{% endif %}</div>
+  <h1 class="hero-title">{{ datos.descripcion }}</h1>
+  <p class="hero-desc">
+    Umbral práctico de aceptación: <strong class="mono">{{ "%.1f"|format(datos.umbral_mape) }}%</strong> MAPE ·
+    {% if datos.acepta_umbral %}
+      <span class="badge badge-good">Modelo v4 acepta el umbral</span>
+    {% else %}
+      <span class="badge badge-bad">Modelo v4 no alcanza el umbral</span>
+    {% endif %}
+    {% if datos.umbral_teorico is not none %}
+    <br><span class="muted">Umbral teórico: <strong class="mono">{{ "%.1f"|format(datos.umbral_teorico) }}%</strong> ·
+    {% if datos.acepta_teorico %}<span class="badge badge-good">v4 también lo cumple</span>{% else %}<span class="badge badge-bad">v4 no lo cumple</span>{% endif %}</span>
+    {% endif %}
+  </p>
+</section>
+
+<section class="detail-grid">
+  <div class="panel gauge-panel">
+    <div class="panel-head">
+      <h2>MAPE — LSTM v4</h2>
+      <p>vs. umbral práctico de aceptación del alimentador</p>
+    </div>
+    <div class="gauge-holder">
+      <svg id="gaugeSvg" viewBox="0 0 260 160" class="gauge-svg"></svg>
+      <div class="gauge-readout">
+        <span class="gauge-value mono">{{ "%.2f"|format(datos.v4.mape) }}%</span>
+        <span class="gauge-caption">umbral {{ "%.1f"|format(datos.umbral_mape) }}%</span>
+      </div>
+    </div>
+    <a class="row-link pred-link" href="{{ url_for('predicciones', codigo=codigo) }}">Ver curvas real vs. predicho →</a>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Comparación de métricas</h2>
+      <p>LSTM v1 · LSTM v4 — horizonte 1h (4 pasos)</p>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="radarChart" height="220"></canvas>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Tabla de métricas</h2>
+  </div>
+  <div class="table-wrap">
+    <table class="results-table metrics-table">
+      <thead>
+        <tr>
+          <th>Métrica</th>
+          <th>LSTM v1</th>
+          <th>LSTM v4</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for key in metricas_keys %}
+        <tr>
+          <td>{{ metricas_labels[key] }}</td>
+          <td class="mono">{{ "%.4f"|format(datos.v1[key]) }}</td>
+          <td class="mono accent-strong">{{ "%.4f"|format(datos.v4[key]) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Otros alimentadores</h2>
+  </div>
+  <div class="chip-row">
+    {% for o in otros %}
+    <a class="chip" href="{{ url_for('detalle', codigo=o) }}">{{ o }}</a>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+drawGauge('gaugeSvg', {{ datos.v4.mape }}, {{ datos.umbral_mape }});
+
+const ctx = document.getElementById('radarChart').getContext('2d');
+new Chart(ctx, {
+  type: 'radar',
+  data: {
+    labels: ['MAPE inv.', 'RMSE inv.', 'MAE inv.', 'R²'],
+    datasets: [
+      {
+        label: 'LSTM v1',
+        data: [
+          {{ 100 - datos.v1.mape }},
+          {{ (100 - datos.v1.rmse/2)|round(1) }}, {{ (100 - datos.v1.mae/2)|round(1) }},
+          {{ (datos.v1.r2 * 100)|round(1) }}
+        ],
+        borderColor: '#5B6B8C',
+        backgroundColor: 'rgba(91,107,140,0.15)',
+        pointBackgroundColor: '#5B6B8C'
+      },
+      {
+        label: 'LSTM v4',
+        data: [
+          {{ 100 - datos.v4.mape }},
+          {{ (100 - datos.v4.rmse/2)|round(1) }}, {{ (100 - datos.v4.mae/2)|round(1) }},
+          {{ (datos.v4.r2 * 100)|round(1) }}
+        ],
+        borderColor: '#2FD3B0',
+        backgroundColor: 'rgba(47,211,176,0.2)',
+        pointBackgroundColor: '#2FD3B0'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      r: {
+        angleLines: { color: '#1E293F' },
+        grid: { color: '#1E293F' },
+        pointLabels: { color: '#8A99B3', font: { family: 'Inter', size: 11 } },
+        ticks: { display: false },
+        suggestedMin: 0,
+        suggestedMax: 100
+      }
+    },
+    plugins: {
+      legend: { labels: { color: '#E6EDF5', font: { family: 'Inter' } } }
+    }
+  }
+});
+</script>
+{% endblock %}

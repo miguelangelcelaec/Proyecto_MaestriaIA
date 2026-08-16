@@ -1,0 +1,6 @@
+codigo,descripcion,estado,n_registros,n_features,ventanas_train,ventanas_val,ventanas_test,mb_X_train,tiempo_seg
+ALIN,Industrial,OK,350688,26,17487,2144,2144,1165.5,150.0
+ALUC,Urbano Residencial-Comercial,OK,350688,26,17487,2144,2144,1165.5,142.5
+ALUR,Urbano Residencial,OK,350688,26,17487,2144,2144,1165.5,142.3
+ALRA,Rural Residencial-Agrícola,OK,350688,26,17487,2144,2144,1165.5,145.8
+ALRG,Rural Residencial-Ganadero (ex-PISM),OK,350688,26,17433,2144,2144,1161.9,232.7

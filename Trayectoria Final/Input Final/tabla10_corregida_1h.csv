@@ -1,0 +1,46 @@
+Alimentador,Descripción,Umbral (%),Test evaluado,Modelo,MAPE (%),RMSE (kW),MAE (kW),R²,Cumple umbral
+ALIN,Industrial,12.0,Test limpio (sin racionamiento),Persistencia (últimos 4 pasos),9.307,11.209,7.38,0.8728,True
+ALIN,Industrial,12.0,Test limpio (sin racionamiento),Media Móvil,10.669,13.056,8.562,0.8263,True
+ALIN,Industrial,12.0,Test limpio (sin racionamiento),Regresión Lineal,10.496,9.934,7.348,0.9151,True
+ALIN,Industrial,12.0,Test limpio (sin racionamiento),LSTM v5 (residual),5.996,9.125,4.793,0.9213,True
+ALIN,Industrial,12.0,Test completo (con racionamiento),Persistencia (últimos 4 pasos),9.932,11.371,6.397,0.9117,True
+ALIN,Industrial,12.0,Test completo (con racionamiento),Media Móvil,11.507,13.429,7.575,0.8764,True
+ALIN,Industrial,12.0,Test completo (con racionamiento),Regresión Lineal,11.801,11.086,7.891,0.9228,True
+ALIN,Industrial,12.0,Test completo (con racionamiento),LSTM v5 (residual),6.573,9.518,4.549,0.9381,True
+ALIN,Industrial,12.0,"Test completo (walk-forward, stride=4)",ARIMA,7.283,8.778,4.645,0.9471,True
+ALUC,Urbano Residencial-Comercial,9.0,Test limpio (sin racionamiento),Persistencia (últimos 4 pasos),9.247,31.717,19.76,0.906,False
+ALUC,Urbano Residencial-Comercial,9.0,Test limpio (sin racionamiento),Media Móvil,13.474,43.453,28.496,0.8251,False
+ALUC,Urbano Residencial-Comercial,9.0,Test limpio (sin racionamiento),Regresión Lineal,5.392,17.628,11.179,0.971,True
+ALUC,Urbano Residencial-Comercial,9.0,Test limpio (sin racionamiento),LSTM v5 (residual),2.156,12.069,4.762,0.9863,True
+ALUC,Urbano Residencial-Comercial,9.0,Test completo (con racionamiento),Persistencia (últimos 4 pasos),11.528,59.397,27.508,0.7502,False
+ALUC,Urbano Residencial-Comercial,9.0,Test completo (con racionamiento),Media Móvil,16.236,69.308,39.246,0.6567,False
+ALUC,Urbano Residencial-Comercial,9.0,Test completo (con racionamiento),Regresión Lineal,8.032,43.296,18.696,0.8639,True
+ALUC,Urbano Residencial-Comercial,9.0,Test completo (con racionamiento),LSTM v5 (residual),4.965,51.839,14.624,0.8068,True
+ALUC,Urbano Residencial-Comercial,9.0,"Test completo (walk-forward, stride=4)",ARIMA,6.426,52.478,18.41,0.8202,True
+ALUR,Urbano Residencial,12.0,Test limpio (sin racionamiento),Persistencia (últimos 4 pasos),7.148,23.486,16.934,0.8892,True
+ALUR,Urbano Residencial,12.0,Test limpio (sin racionamiento),Media Móvil,9.401,30.041,22.139,0.8192,True
+ALUR,Urbano Residencial,12.0,Test limpio (sin racionamiento),Regresión Lineal,4.519,15.924,10.611,0.9481,True
+ALUR,Urbano Residencial,12.0,Test limpio (sin racionamiento),LSTM v5 (residual),2.361,9.179,5.261,0.9826,True
+ALUR,Urbano Residencial,12.0,Test completo (con racionamiento),Persistencia (últimos 4 pasos),9.446,41.351,21.405,0.8097,True
+ALUR,Urbano Residencial,12.0,Test completo (con racionamiento),Media Móvil,12.344,46.876,28.501,0.7525,False
+ALUR,Urbano Residencial,12.0,Test completo (con racionamiento),Regresión Lineal,6.86,30.999,15.098,0.8887,True
+ALUR,Urbano Residencial,12.0,Test completo (con racionamiento),LSTM v5 (residual),4.68,31.258,11.214,0.8869,True
+ALUR,Urbano Residencial,12.0,"Test completo (walk-forward, stride=4)",ARIMA,6.244,34.082,14.439,0.8718,True
+ALRA,Rural Residencial-Agrícola,8.0,Test limpio (sin racionamiento),Persistencia (últimos 4 pasos),9.47,43.766,30.368,0.7472,False
+ALRA,Rural Residencial-Agrícola,8.0,Test limpio (sin racionamiento),Media Móvil,11.414,49.773,36.577,0.6678,False
+ALRA,Rural Residencial-Agrícola,8.0,Test limpio (sin racionamiento),Regresión Lineal,6.229,32.322,19.547,0.8579,True
+ALRA,Rural Residencial-Agrícola,8.0,Test limpio (sin racionamiento),LSTM v5 (residual),2.982,19.129,9.56,0.9483,True
+ALRA,Rural Residencial-Agrícola,8.0,Test completo (con racionamiento),Persistencia (últimos 4 pasos),13.037,86.489,43.208,0.6002,False
+ALRA,Rural Residencial-Agrícola,8.0,Test completo (con racionamiento),Media Móvil,15.793,96.915,55.679,0.4857,False
+ALRA,Rural Residencial-Agrícola,8.0,Test completo (con racionamiento),Regresión Lineal,8.936,62.501,29.228,0.7728,False
+ALRA,Rural Residencial-Agrícola,8.0,Test completo (con racionamiento),LSTM v5 (residual),6.613,65.928,23.663,0.7455,True
+ALRA,Rural Residencial-Agrícola,8.0,"Test completo (walk-forward, stride=4)",ARIMA,9.456,73.396,30.816,0.7185,False
+ALRG,Rural Residencial-Ganadero (PISM),8.0,Test limpio (sin racionamiento),Persistencia (últimos 4 pasos),9.337,30.773,16.308,0.5724,False
+ALRG,Rural Residencial-Ganadero (PISM),8.0,Test limpio (sin racionamiento),Media Móvil,11.552,34.41,20.571,0.4529,False
+ALRG,Rural Residencial-Ganadero (PISM),8.0,Test limpio (sin racionamiento),Regresión Lineal,7.937,21.984,13.168,0.764,True
+ALRG,Rural Residencial-Ganadero (PISM),8.0,Test limpio (sin racionamiento),LSTM v5 (residual),3.898,14.965,6.154,0.89,True
+ALRG,Rural Residencial-Ganadero (PISM),8.0,Test completo (con racionamiento),Persistencia (últimos 4 pasos),12.028,47.547,22.432,0.5073,False
+ALRG,Rural Residencial-Ganadero (PISM),8.0,Test completo (con racionamiento),Media Móvil,14.812,52.12,29.064,0.3877,False
+ALRG,Rural Residencial-Ganadero (PISM),8.0,Test completo (con racionamiento),Regresión Lineal,10.113,34.823,18.545,0.7022,False
+ALRG,Rural Residencial-Ganadero (PISM),8.0,Test completo (con racionamiento),LSTM v5 (residual),7.214,40.637,14.423,0.6231,True
+ALRG,Rural Residencial-Ganadero (PISM),8.0,"Test completo (walk-forward, stride=4)",ARIMA,8.068,37.752,14.686,0.6853,False

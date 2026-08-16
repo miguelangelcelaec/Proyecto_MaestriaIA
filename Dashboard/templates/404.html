@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}No encontrado · Panel STLF{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-eyebrow">ERROR 404</div>
+  <h1 class="hero-title">Alimentador no encontrado</h1>
+  <p class="hero-desc">No hay datos cargados para ese código de alimentador.</p>
+  <a class="row-link" href="{{ url_for('index') }}">← Volver al resumen</a>
+</section>
+{% endblock %}
